@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHP Lab — Program Vault</title>
+<style>
+  :root{
+    --bg:#0e1116; --card:#161b22; --muted:#0b0f14; --border:#262d38;
+    --fg:#e6edf3; --fg-muted:#8b98a8; --primary:#2f81f7; --success:#2ea043;
+    --hover:#3b4451;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#f6f7f9; --card:#fff; --muted:#f1f3f5; --border:#dfe3e8;
+      --fg:#111827; --fg-muted:#5f6b7a; --primary:#2563eb; --success:#15803d;
+      --hover:#c9d1db;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:820px;margin:0 auto;padding:0 16px 40px}
+
+  .bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:12px 0 10px;
+       border-bottom:1px solid var(--border)}
+  .barTop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:9px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--primary);
+       box-shadow:0 0 0 3px rgba(47,129,247,.22)}
+  .h1{font-size:14px;font-weight:600}
+  .sub{font-size:11px;color:var(--fg-muted);margin-top:1px}
+  .tools{display:flex;gap:6px}
+  .btn{font:inherit;font-size:11.5px;font-weight:500;padding:6px 11px;border-radius:7px;
+       border:1px solid var(--border);background:var(--card);color:var(--fg);cursor:pointer}
+  .btn:hover{border-color:var(--hover)}
+  .btn.on{background:var(--primary);border-color:var(--primary);color:#fff}
+
+  .barRow{display:flex;gap:8px;margin-top:8px;align-items:center}
+  .searchBox{flex:1;display:flex;align-items:center;gap:7px;background:var(--card);
+             border:1px solid var(--border);border-radius:8px;padding:0 9px;color:var(--fg-muted)}
+  .searchBox:focus-within{border-color:var(--primary)}
+  .searchBox input{flex:1;border:0;background:transparent;color:var(--fg);font:inherit;
+                   font-size:12.5px;padding:8px 0;outline:none}
+  .x{border:0;background:transparent;color:var(--fg-muted);font-size:16px;cursor:pointer;padding:0 2px}
+  .fontCtl{display:flex;gap:4px}
+  .mini{font:inherit;font-size:11px;padding:5px 8px;border-radius:6px;
+        border:1px solid var(--border);background:var(--muted);color:var(--fg-muted);cursor:pointer}
+  .mini:hover{color:var(--fg)}
+  .statusline{margin-top:7px;font-size:11.5px;font-weight:500;color:var(--success)}
+
+  .tips{margin:14px 0 4px;border:1px dashed var(--border);border-radius:10px;
+        padding:10px 12px;background:var(--muted)}
+  .tipsHead{display:flex;justify-content:space-between;align-items:center;font-size:11px;
+            font-weight:600;color:var(--fg-muted);text-transform:uppercase;letter-spacing:.06em}
+  .tipsBody{margin-top:8px;display:grid;gap:5px}
+  .kRow{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--fg-muted)}
+  .kRow span{color:var(--fg)}
+  kbd{font-family:ui-monospace,monospace;font-size:10px;padding:2px 5px;border-radius:4px;
+      border:1px solid var(--border);background:var(--card);color:var(--fg)}
+  .kNote{font-size:11px;color:var(--fg-muted);border-top:1px solid var(--border);padding-top:6px}
+  .kNote code{font-family:ui-monospace,monospace;font-size:10.5px}
+
+  .card{margin-top:12px;border:1px solid var(--border);border-radius:11px;
+        background:var(--card);overflow:hidden}
+  .card:hover{border-color:var(--hover)}
+  .card.copied{border-color:var(--success);box-shadow:0 0 0 1px rgba(46,160,67,.45)}
+  .card.hit{border-color:var(--primary)}
+  .cHead{display:flex;align-items:center;gap:9px;padding:9px 11px;border-bottom:1px solid var(--border)}
+  .num{flex:none;width:21px;height:21px;border-radius:6px;background:var(--primary);color:#fff;
+       font-size:11px;font-weight:600;display:grid;place-items:center}
+  .card.copied .num{background:var(--success)}
+  .title{flex:1;font-size:12.5px;font-weight:500;line-height:1.35}
+  .tag{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+       color:var(--fg-muted);border:1px solid var(--border);padding:2px 5px;border-radius:4px}
+  .copy{flex:none;font:inherit;font-size:11px;font-weight:600;padding:5px 12px;border-radius:7px;
+        border:1px solid var(--primary);background:var(--primary);color:#fff;cursor:pointer}
+  .copy:hover{filter:brightness(1.1)}
+  .copy:active{transform:scale(.96)}
+  .copy.ok{background:var(--success);border-color:var(--success)}
+
+  pre{margin:0;padding:11px 12px;overflow-x:auto;background:var(--muted)}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;font-size:12px;
+       line-height:1.55;color:var(--fg);white-space:pre;tab-size:2}
+
+  .foot{display:flex;align-items:center;justify-content:space-between;margin:18px 0 6px;
+        font-size:11px;color:var(--fg-muted)}
+  .empty{text-align:center;padding:34px 0;font-size:12.5px;color:var(--fg-muted)}
+  body.zen .bar,body.zen .tips,body.zen .foot,body.zen .tag,body.zen .sub{display:none}
+  body.zen code{font-size:14px}
+  body.collapsed pre{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="bar">
+    <div class="barTop">
+      <div class="brand">
+        <span class="dot"></span>
+        <div>
+          <div class="h1">PHP lab — program vault</div>
+          <div class="sub" id="sub">5 programs · click, copy, paste</div>
+        </div>
+      </div>
+      <div class="tools">
+        <button class="btn" id="btnZen" title="Zen mode (Z)">Zen</button>
+        <button class="btn" id="btnCollapse" title="Collapse all (C)">Collapse</button>
+        <button class="btn" id="btnCopyAll">Copy all</button>
+      </div>
+    </div>
+    <div class="barRow">
+      <div class="searchBox">
+        <input id="search" type="text" placeholder="Filter by title or code…  ( / )" autocomplete="off">
+        <button class="x" id="btnClear" title="Clear (Esc)" hidden>&times;</button>
+      </div>
+      <div class="fontCtl">
+        <button class="mini" id="fsDown">A−</button>
+        <button class="mini" id="fsUp">A+</button>
+      </div>
+    </div>
+    <div class="statusline" id="status" hidden></div>
+  </header>
+
+  <div class="tips" id="tips">
+    <div class="tipsHead">
+      <span>Lab shortcuts</span>
+      <button class="mini" id="tipsToggle">hide</button>
+    </div>
+    <div class="tipsBody">
+      <div class="kRow"><kbd>1</kbd>–<kbd>5</kbd><span>copy that program instantly</span></div>
+      <div class="kRow"><kbd>/</kbd><span>jump to search</span></div>
+      <div class="kRow"><kbd>Z</kbd><span>zen mode — code only, bigger text</span></div>
+      <div class="kRow"><kbd>C</kbd><span>collapse everything</span></div>
+      <div class="kRow"><kbd>Esc</kbd><span>clear filter / exit zen</span></div>
+      <div class="kNote">Save each as <code>p1.php</code>–<code>p5.php</code> in <code>htdocs</code>, run via <code>localhost/p1.php</code>.</div>
+    </div>
+  </div>
+
+  <main id="list"></main>
+
+  <footer class="foot">
+    <span id="doneCount">0 / 5 copied</span>
+    <button class="btn" id="btnReset">Reset marks</button>
+  </footer>
+</div>
+
+<script>
+const PROGRAMS = [
+  {
+    n:1, title:"Student marks using nested associative array", tag:"foreach",
+    code:`<html>
+<body>
+<h2>Student Marks</h2>
+<?php
+$stdMarks = array(
+    "Ramesh" => array(
+        "Java" => 88,
+        "Php" => 98,
+        "Networking" => 78
+    ),
+    "Suresh" => array(
+        "Java" => 83,
+        "Php" => 90,
+        "Networking" => 82
+    ),
+    "Kishan" => array(
+        "Java" => 85,
+        "Php" => 90,
+        "Networking" => 79
+    )
+);
+foreach ($stdMarks as $std => $subjectArray) {
+    echo "Marks of $std:<br>";
+    foreach ($subjectArray as $subject => $marks) {
+        echo "$subject = $marks <br>";
+    }
+    echo "<br><br>";
+}
+?>
+</body>
+</html>`
+  },
+  {
+    n:2, title:"Simple calculator using $_POST", tag:"form",
+    code:`<html>
+<?php
+if (isset($_POST["operator"])) {
+    $first_num  = $_POST["first_num"];
+    $second_num = $_POST["second_num"];
+    $operator   = $_POST["operator"];
+    $result     = "";
+
+    if (is_numeric($first_num) && is_numeric($second_num)) {
+        switch ($operator) {
+            case "+":
+                $result = $first_num + $second_num;
+                break;
+
+            case "-":
+                $result = $first_num - $second_num;
+                break;
+
+            case "*":
+                $result = $first_num * $second_num;
+                break;
+
+            case "/":
+                $result = $first_num / $second_num;
+                break;
+        }
+    }
+}
+?>
+
+<body>
+<h1>PHP Simple Calculator</h1>
+
+<form action="" method="post">
+
+    <p>
+        <b>First Number:</b>
+        <input type="number" name="first_num"
+               value="<?php echo $first_num; ?>" required>
+    </p>
+
+    <p>
+        <b>Second Number:</b>
+        <input type="number" name="second_num"
+               value="<?php echo $second_num; ?>" required>
+    </p>
+
+    <p>
+        <b>Result:</b>
+        <input type="number" name="result"
+               value="<?php echo $result; ?>" readonly>
+    </p>
+
+    <input type="submit" value="+" name="operator">
+    <input type="submit" value="-" name="operator">
+    <input type="submit" value="*" name="operator">
+    <input type="submit" value="/" name="operator">
+
+</form>
+
+</body>
+</html>`
+  },
+  {
+    n:3, title:"Pyramid pattern using $_POST", tag:"loop",
+    code:`<html>
+<body>
+<?php
+$noOfLines = "";
+$symbol = "";
+if (isset($_POST["submit"])) {
+$noOfLines = $_POST["line"];
+$symbol = $_POST["symbol"];
+}
+?>
+<h2>Pyramid</h2>
+<form method="post">
+Enter the loop number:
+<input type="number" name="line" required value="<?php echo $noOfLines; ?>"><br><br>
+Enter the Symbol:
+<input type="text" name="symbol" required value="<?php echo $symbol; ?>"><br><br>
+<input type="submit" value="Submit" name="submit">
+<input type="submit" value="Clear" name="clr"><br><br>
+</form>
+<?php
+if ($noOfLines and $symbol) {
+for ($i = 0; $i < $noOfLines; $i++) {
+for ($j = 0; $j < $i + 1; $j++) {
+echo "<b>$symbol</b>";
+}
+echo "<br>";
+}
+}
+?>
+</body>
+</html>`
+  },
+  {
+    n:4, title:"Check whether a number is Armstrong", tag:"while",
+    code:`<html>
+<body>
+ <form method="POST">
+ <table border="1">
+ <tr>
+ <td>Enter Number:</td>
+ <td><input type="number" name="number"></td>
+ </tr>
+ <tr>
+ <td></td>
+ <td>
+ <input type="submit" value="Submit" name="Submit">
+ </td>
+ </tr>
+ <?php
+ if (isset($_POST['number']))
+ {
+ $a = $_POST['number'];
+ $number = $a;
+ $sum = 0;
+ while ($number != 0)
+ {
+ $r = $number % 10;
+ $sum = $sum + ($r * $r * $r );
+ $number = (int)($number / 10);
+ }
+ if ($a == $sum)
+ {
+ echo "$a is an Amstrong Number";
+ }
+ else
+{
+ echo "$a is not an Amstrong Number";
+ }
+ }
+ ?>
+ </table>
+ </form>
+</body>
+</html>`
+  },
+  {
+    n:5, title:"Date function demo (greeting by hour)", tag:"date()",
+    code:`<?php
+date_default_timezone_set('Asia/Kolkata');
+
+$time=date('G:i');
+echo"current time is: $time<br>";
+
+$a=date('G');
+
+if($a>=0&& $a<=5)
+    echo "It's Late Night";
+else if($a>=6 && $a<=11)
+    echo "Good Morning";
+else if($a>=12 && $a<=16)
+    echo "Good Afternoon";
+else if($a>=17 && $a<=23)
+    echo "Good Evening";
+echo"<br>";
+
+$date = date('d-m-Y');
+echo "Today's Date is $date<br>";
+
+$b=date('l');
+echo"Today is $b<br>";
+?>`
+  }
+];
+
+const list=document.getElementById('list'), statusEl=document.getElementById('status'),
+      sub=document.getElementById('sub'), search=document.getElementById('search'),
+      btnClear=document.getElementById('btnClear'), doneCount=document.getElementById('doneCount');
+
+const store={
+  get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+};
+
+let copied=new Set(JSON.parse(store.get('phpvault_copied','[]')));
+let fs=parseFloat(store.get('phpvault_fs','12'));
+
+function applyFs(){document.querySelectorAll('code').forEach(c=>c.style.fontSize=fs+'px');store.set('phpvault_fs',fs)}
+function flash(m){statusEl.hidden=false;statusEl.textContent=m;clearTimeout(flash._t);flash._t=setTimeout(()=>statusEl.hidden=true,1600)}
+function saveCopied(){
+  store.set('phpvault_copied',JSON.stringify([...copied]));
+  doneCount.textContent=copied.size===PROGRAMS.length?'All 5 copied — good luck':copied.size+' / '+PROGRAMS.length+' copied';
+}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true}catch(e){
+    const ta=document.createElement('textarea');ta.value=t;
+    ta.style.position='absolute';ta.style.left='-9999px';document.body.appendChild(ta);
+    ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(_){}
+    ta.remove();return ok;
+  }
+}
+function markCopied(n,btn,card){
+  copied.add(n);saveCopied();
+  if(card)card.classList.add('copied');
+  if(btn){btn.textContent='Copied ✓';btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('ok')},1400)}
+}
+
+function render(){
+  list.innerHTML='';
+  PROGRAMS.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='card'+(copied.has(p.n)?' copied':'');
+    card.dataset.n=p.n;
+
+    const head=document.createElement('div');head.className='cHead';
+    const num=document.createElement('div');num.className='num';num.textContent=p.n;
+    const title=document.createElement('div');title.className='title';title.textContent=p.title;
+    const tag=document.createElement('span');tag.className='tag';tag.textContent=p.tag;
+    const btn=document.createElement('button');btn.className='copy';btn.textContent='Copy';
+    btn.addEventListener('click',async()=>{
+      const ok=await copyText(p.code);
+      if(ok){markCopied(p.n,btn,card);flash('Program '+p.n+' copied')}
+      else flash('Copy failed — select manually');
+    });
+    head.append(num,title,tag,btn);
+
+    const pre=document.createElement('pre');
+    const code=document.createElement('code');
+    code.textContent=p.code;code.style.fontSize=fs+'px';
+    pre.appendChild(code);
+    card.append(head,pre);list.appendChild(card);
+  });
+  saveCopied();
+}
+
+function filter(){
+  const q=search.value.trim().toLowerCase();
+  btnClear.hidden=!q;let shown=0;
+  document.querySelectorAll('.card').forEach(card=>{
+    const p=PROGRAMS.find(x=>x.n===Number(card.dataset.n));
+    const m=!q||p.title.toLowerCase().includes(q)||p.code.toLowerCase().includes(q);
+    card.style.display=m?'':'none';card.classList.toggle('hit',!!q&&m);
+    if(m)shown++;
+  });
+  let empty=document.querySelector('.empty');
+  if(!shown){
+    if(!empty){empty=document.createElement('div');empty.className='empty';
+      empty.textContent='Nothing matches that. Try "form", "loop", "date" or "array".';
+      list.appendChild(empty)}
+  }else if(empty)empty.remove();
+  sub.textContent=q?shown+' match'+(shown===1?'':'es'):PROGRAMS.length+' programs · click, copy, paste';
+}
+
+search.addEventListener('input',filter);
+btnClear.addEventListener('click',()=>{search.value='';filter();search.focus()});
+
+document.getElementById('btnCopyAll').addEventListener('click',async()=>{
+  const all=PROGRAMS.map(p=>'/* ===== Program '+p.n+': '+p.title+' ===== */\n'+p.code).join('\n\n\n');
+  const ok=await copyText(all);
+  if(ok){PROGRAMS.forEach(p=>copied.add(p.n));
+    document.querySelectorAll('.card').forEach(c=>c.classList.add('copied'));
+    saveCopied();flash('All 5 copied with headers')}
+  else flash('Copy failed');
+});
+
+const btnZen=document.getElementById('btnZen');
+btnZen.addEventListener('click',()=>{document.body.classList.toggle('zen');
+  btnZen.classList.toggle('on',document.body.classList.contains('zen'))});
+
+const btnCollapse=document.getElementById('btnCollapse');
+btnCollapse.addEventListener('click',()=>{
+  document.body.classList.toggle('collapsed');
+  const on=document.body.classList.contains('collapsed');
+  btnCollapse.classList.toggle('on',on);
+  btnCollapse.textContent=on?'Expand':'Collapse';
+});
+
+document.getElementById('btnReset').addEventListener('click',()=>{
+  copied.clear();document.querySelectorAll('.card').forEach(c=>c.classList.remove('copied'));
+  saveCopied();flash('Marks cleared');
+});
+
+document.getElementById('fsUp').addEventListener('click',()=>{fs=Math.min(20,fs+1);applyFs()});
+document.getElementById('fsDown').addEventListener('click',()=>{fs=Math.max(9,fs-1);applyFs()});
+
+const tips=document.getElementById('tips');
+document.getElementById('tipsToggle').addEventListener('click',e=>{
+  const b=tips.querySelector('.tipsBody');
+  const hidden=b.style.display==='none';
+  b.style.display=hidden?'':'none';e.target.textContent=hidden?'hide':'show';
+});
+
+document.addEventListener('keydown',e=>{
+  const typing=document.activeElement===search;
+  if(e.key==='Escape'){
+    if(typing){search.value='';filter()}
+    document.body.classList.remove('zen');btnZen.classList.remove('on');
+    search.blur();return;
+  }
+  if(typing)return;
+  if(e.key==='/'){e.preventDefault();search.focus();return}
+  const k=e.key.toLowerCase();
+  if(k==='z'){btnZen.click();return}
+  if(k==='c'){btnCollapse.click();return}
+  const n=parseInt(e.key,10);
+  if(n>=1&&n<=PROGRAMS.length){
+    const card=document.querySelector('.card[data-n="'+n+'"]');
+    if(card&&card.style.display!=='none')card.querySelector('.copy').click();
+  }
+});
+
+render();filter();
+</script>
+</body>
+</html>
