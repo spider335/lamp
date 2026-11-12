@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>p1.php - php-lab - Visual Studio Code</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#1e1e1e;height:100%;overflow:hidden}
+  .vscode{position:relative;height:100vh;display:flex;flex-direction:column;background:#1e1e1e;
+          color:#cccccc;overflow:hidden;font:13px/1.45 -apple-system,"Segoe UI",system-ui,Roboto,sans-serif;
+          -webkit-font-smoothing:antialiased}
+  .titlebar{height:32px;flex:none;display:flex;align-items:center;justify-content:space-between;
+            background:#3c3c3c;padding-left:8px;user-select:none;position:relative}
+  .tbLeft{display:flex;align-items:center;gap:10px;min-width:0;z-index:2}
+  .vsIcon{display:flex;align-items:center}
+  .menus{display:flex;gap:2px;font-size:12px;color:#cccccc}
+  .menus span{padding:3px 7px;border-radius:3px}
+  .menus span:hover{background:#505050}
+  .tbTitle{position:absolute;left:50%;transform:translateX(-50%);font-size:12px;color:#cccccc;
+           white-space:nowrap;pointer-events:none;max-width:44%}
+  .tbRight{display:flex;height:100%;z-index:2}
+  .wbtn{width:46px;display:grid;place-items:center;height:100%}
+  .wbtn:hover{background:#505050}
+  .wbtn.close:hover{background:#e81123}
+  .body{flex:1;display:flex;min-height:0}
+  .activity{width:48px;flex:none;background:#333333;display:flex;flex-direction:column;
+            align-items:center;padding-top:3px}
+  .act{width:48px;height:48px;display:grid;place-items:center;border-left:2px solid transparent;
+       cursor:pointer;color:#858585}
+  .act:hover{color:#e7e7e7}
+  .act.active{border-left-color:#ffffff;color:#ffffff}
+  .actSpacer{flex:1}
+  .act.small{height:40px}
+  .sidebar{width:200px;flex:none;background:#252526;display:flex;flex-direction:column;overflow:hidden}
+  .sidebar.hidden{display:none}
+  .sideView{display:flex;flex-direction:column;min-height:0;flex:1}
+  .sideHead{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#bbbbbb;
+            padding:10px 16px 8px;user-select:none}
+  .sideActions{display:flex;justify-content:space-between;align-items:center;padding:0 12px 4px;
+               font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#cccccc}
+  .saIcons{display:flex;gap:8px;font-size:13px}
+  .folderRow{display:flex;align-items:center;gap:3px;padding:2px 8px;font-size:11.5px;
+             font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#cccccc;user-select:none}
+  .chev{font-size:12px;color:#cccccc}
+  .files{overflow-y:auto;padding-bottom:8px}
+  .files::-webkit-scrollbar{width:10px}
+  .files::-webkit-scrollbar-thumb{background:#4a4a4a}
+  .file{display:flex;align-items:center;gap:6px;padding:2px 10px 2px 20px;font-size:13px;
+        color:#cccccc;cursor:pointer;user-select:none;white-space:nowrap}
+  .file:hover{background:#2a2d2e}
+  .file.active{background:#37373d;color:#ffffff}
+  .fi{font-size:8.5px;font-weight:700;width:14px;text-align:center;flex:none;letter-spacing:-.02em}
+  .fi.php{color:#8892bf}.fi.html{color:#e44d26}.fi.css{color:#42a5f5}.fi.txt{color:#9e9e9e}
+  .sBox{padding:0 12px 8px}
+  .sBox input{width:100%;background:#3c3c3c;border:1px solid #3c3c3c;color:#cccccc;font:inherit;
+              font-size:12px;padding:4px 7px;border-radius:2px;outline:none}
+  .sBox input:focus{border-color:#007fd4}
+  .sOpts{display:flex;gap:6px;margin-top:5px;font-size:10.5px;color:#8b8b8b}
+  .sOpts span{border:1px solid #4a4a4a;border-radius:2px;padding:0 4px}
+  .sResults{overflow-y:auto;font-size:12px}
+  .sEmpty,.dimNote{padding:8px 14px;font-size:11.5px;color:#8b8b8b;line-height:1.5}
+  .sFile{padding:4px 14px;color:#cccccc;font-weight:600;font-size:11.5px;display:flex;gap:5px}
+  .sHit{padding:1px 14px 1px 26px;color:#a0a0a0;font-size:11.5px;cursor:pointer;white-space:nowrap;
+        overflow:hidden;text-overflow:ellipsis;font-family:Consolas,monospace}
+  .sHit:hover{background:#2a2d2e;color:#fff}
+  .sHit b{color:#4daafc}
+  .scmBox{padding:0 12px 6px}
+  .scmBox input{width:100%;background:#3c3c3c;border:1px solid #3c3c3c;color:#cccccc;font:inherit;
+                font-size:12px;padding:5px 7px;border-radius:2px}
+  .scmBtn{margin:0 12px 8px;background:#0078d4;color:#fff;font-size:12px;text-align:center;
+          padding:4px;border-radius:2px;cursor:pointer}
+  .scmGroup{padding:4px 14px;font-size:11.5px;color:#cccccc;display:flex;gap:6px}
+  .badge{background:#4d4d4d;border-radius:9px;padding:0 6px;font-size:10px}
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;background:#1e1e1e}
+  .tabs{height:35px;flex:none;display:flex;background:#252526;overflow-x:auto}
+  .tabs::-webkit-scrollbar{height:0}
+  .tab{display:flex;align-items:center;gap:7px;padding:0 10px 0 12px;font-size:13px;
+       background:#2d2d2d;color:#969696;border-right:1px solid #252526;cursor:pointer;white-space:nowrap}
+  .tab.active{background:#1e1e1e;color:#ffffff}
+  .tab .x{font-size:14px;color:#969696;border-radius:3px;width:16px;text-align:center}
+  .tab .x:hover{background:#4a4a4a;color:#fff}
+  .bcRow{height:26px;flex:none;display:flex;align-items:center;padding:0 14px;font-size:11.5px;color:#a9a9a9}
+  .bcPath{display:flex;gap:5px;align-items:center}
+  .bsep{color:#6b6b6b}
+  .bcTools{margin-left:auto;display:flex;gap:2px}
+  .icBtn{background:transparent;border:0;color:#a9a9a9;padding:2px 4px;border-radius:3px;
+         cursor:pointer;display:grid;place-items:center}
+  .icBtn:hover{background:#3a3a3a;color:#fff}
+  .icBtn.ok{color:#4ec9b0}
+  .editorWrap{flex:1;display:flex;min-height:0;overflow:hidden}
+  .editor{flex:1;overflow:auto;font-family:Consolas,"Courier New",ui-monospace,monospace;
+          font-size:13px;line-height:19px;padding:4px 0 60px 0;cursor:text}
+  .editor::-webkit-scrollbar{width:14px;height:14px}
+  .editor::-webkit-scrollbar-thumb{background:#4a4a4a;border:3px solid #1e1e1e;border-radius:8px}
+  .editor::-webkit-scrollbar-corner{background:#1e1e1e}
+  .row{display:flex}
+  .row.act{background:#2a2d2e}
+  .row:hover{background:#232323}
+  .ln{width:56px;flex:none;text-align:right;padding-right:16px;color:#858585;user-select:none;font-size:13px}
+  .row.act .ln{color:#c6c6c6}
+  .lc{padding-right:24px;white-space:pre;flex:1}
+  .caret{display:inline-block;width:2px;height:15px;background:#aeafad;vertical-align:-2px;
+         animation:blink 1s steps(1) infinite}
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  .minimap{width:82px;flex:none;background:#1e1e1e;padding:4px 6px;overflow:hidden;position:relative}
+  .mm{height:2px;margin-bottom:1px;border-radius:1px;opacity:.6}
+  .mmView{position:absolute;left:4px;right:4px;top:4px;height:80px;
+          background:rgba(120,120,120,.14);border:1px solid rgba(160,160,160,.18)}
+  .panel{height:158px;flex:none;background:#1e1e1e;border-top:1px solid #2b2b2b;display:flex;flex-direction:column}
+  .panel.hidden{display:none}
+  .panelHead{height:30px;display:flex;align-items:center;gap:16px;padding:0 14px;font-size:11px;
+             letter-spacing:.05em;color:#9d9d9d;text-transform:uppercase;user-select:none}
+  .ptab{padding:6px 0;border-bottom:1px solid transparent;cursor:pointer}
+  .ptab.active{color:#e7e7e7;border-bottom-color:#e7e7e7}
+  .pTools{margin-left:auto;display:flex;gap:12px;font-size:11px}
+  .term{padding:2px 14px 12px;font-family:Consolas,ui-monospace,monospace;font-size:12px;
+        line-height:17px;color:#cccccc;overflow:auto;flex:1;white-space:pre-wrap}
+  .term .g{color:#23d18b}.term .dim{color:#8b8b8b}
+  .statusbar{height:22px;flex:none;background:#007acc;display:flex;align-items:center;
+             justify-content:space-between;padding:0 8px;font-size:11.5px;color:#fff;user-select:none}
+  .sbLeft,.sbRight{display:flex;align-items:center;gap:10px}
+  .sbItem{display:flex;align-items:center;gap:4px}
+  .sbLeft .sbItem{padding:0 4px;height:22px}
+  .sbLeft .sbItem:hover{background:#1f8ad2}
+  .toasts{position:absolute;right:18px;bottom:36px;display:flex;flex-direction:column;gap:8px;z-index:60}
+  .toast{background:#252526;border:1px solid #3c3c3c;border-left:3px solid #007acc;border-radius:3px;
+         box-shadow:0 2px 10px rgba(0,0,0,.6);padding:9px 14px;font-size:12px;color:#cccccc;
+         min-width:240px;animation:tin .15s ease-out}
+  @keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .palette{position:absolute;top:36px;left:50%;transform:translateX(-50%);width:440px;background:#252526;
+           border:1px solid #454545;border-radius:5px;z-index:80;box-shadow:0 8px 26px rgba(0,0,0,.65);overflow:hidden}
+  .palette input{width:100%;border:0;background:#3c3c3c;color:#fff;font:inherit;font-size:12.5px;
+                 padding:8px 10px;outline:1px solid #007acc;outline-offset:-1px}
+  .palList{max-height:230px;overflow:auto}
+  .palItem{padding:6px 12px;font-size:12.5px;color:#cccccc;cursor:pointer;display:flex;gap:8px;align-items:center}
+  .palItem.sel{background:#04395e;color:#fff}
+  .palHint{padding:5px 10px;font-size:10.5px;color:#858585;border-top:1px solid #3c3c3c}
+  .tk-com{color:#6a9955}.tk-str{color:#ce9178}.tk-tag{color:#569cd6}
+  .tk-var{color:#9cdcfe}.tk-kw{color:#c586c0}.tk-num{color:#b5cea8}.tk-php{color:#c586c0}
+</style>
+</head>
+<body>
+<div class="vscode" id="app">
+
+  <div class="titlebar">
+    <div class="tbLeft">
+      <div class="vsIcon"><svg width="15" height="15" viewBox="0 0 24 24"><path fill="#3aa0e8" d="M17.5 2L9 10.5 4.5 7 2 8.3 6.2 12 2 15.7 4.5 17 9 13.5 17.5 22 22 20V4z"/></svg></div>
+      <div class="menus"><span>File</span><span>Edit</span><span>Selection</span><span>View</span><span>Go</span><span>Run</span><span>Terminal</span><span>Help</span></div>
+    </div>
+    <div class="tbTitle" id="tbTitle">p1.php - php-lab - Visual Studio Code</div>
+    <div class="tbRight">
+      <div class="wbtn"><svg width="10" height="10" viewBox="0 0 10 10" stroke="#cccccc" stroke-width="1"><path d="M2 5h6"/></svg></div>
+      <div class="wbtn"><svg width="10" height="10" viewBox="0 0 10 10" stroke="#cccccc" stroke-width="1" fill="none"><rect x="2.5" y="2.5" width="5" height="5"/></svg></div>
+      <div class="wbtn close"><svg width="10" height="10" viewBox="0 0 10 10" stroke="#cccccc" stroke-width="1.2"><path d="M2.5 2.5l5 5M7.5 2.5l-5 5"/></svg></div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="activity">
+      <div class="act active" data-v="explorer" title="Explorer (Ctrl+Shift+E)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4.5 3.5h6l2 2.5h7v14h-15z"/></svg>
+      </div>
+      <div class="act" data-v="search" title="Search (Ctrl+Shift+F)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2L20 20"/></svg>
+      </div>
+      <div class="act" data-v="scm" title="Source Control (Ctrl+Shift+G)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="5.5" r="2.3"/><circle cx="7" cy="18.5" r="2.3"/><circle cx="17" cy="12" r="2.3"/><path d="M7 7.8v8.4M9.3 6.2h4.6a1.4 1.4 0 011.4 1.4v2.1"/></svg>
+      </div>
+      <div class="act" data-v="debug" title="Run and Debug (Ctrl+Shift+D)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 4.5l12 7.5-12 7.5z"/></svg>
+      </div>
+      <div class="act" data-v="ext" title="Extensions (Ctrl+Shift+X)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3.5" y="3.5" width="7" height="7"/><rect x="13.5" y="13.5" width="7" height="7"/><path d="M13.5 3.5h7v7M3.5 13.5h7v7"/></svg>
+      </div>
+      <div class="actSpacer"></div>
+      <div class="act small" title="Accounts"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0115 0"/></svg></div>
+      <div class="act small" title="Manage"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+      <div class="sideView" id="viewExplorer">
+        <div class="sideHead">Explorer</div>
+        <div class="sideActions"><span class="sa">php-lab</span><span class="saIcons"><span>+</span><span>⋯</span></span></div>
+        <div class="folderRow"><span class="chev">⌄</span><span class="fname">PHP-LAB</span></div>
+        <div class="files" id="files"></div>
+      </div>
+      <div class="sideView" id="viewSearch" hidden>
+        <div class="sideHead">Search</div>
+        <div class="sBox"><input id="sInput" placeholder="Search" autocomplete="off"><div class="sOpts"><span>Match case</span><span>Whole word</span><span>Regex</span></div></div>
+        <div class="sResults" id="sResults"><div class="sEmpty">Search across all files</div></div>
+      </div>
+      <div class="sideView" id="viewSCM" hidden>
+        <div class="sideHead">Source Control</div>
+        <div class="scmBox"><input placeholder="Message (Ctrl+Enter to commit)" readonly></div>
+        <div class="scmBtn">✓ Commit</div>
+        <div class="scmGroup">Changes <span class="badge">5</span></div>
+        <div class="files" id="scmFiles"></div>
+      </div>
+      <div class="sideView" id="viewDebug" hidden>
+        <div class="sideHead">Run and Debug</div>
+        <div class="scmBtn" style="margin:10px 14px">▷ Run and Debug</div>
+        <div class="dimNote">To customize Run and Debug, create a launch.json file.</div>
+      </div>
+      <div class="sideView" id="viewExt" hidden>
+        <div class="sideHead">Extensions</div>
+        <div class="sBox"><input placeholder="Search Extensions in Marketplace" readonly></div>
+        <div class="dimNote">PHP Intelephense · installed</div>
+        <div class="dimNote">PHP Debug · installed</div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="tabs" id="tabs"></div>
+      <div class="bcRow">
+        <div class="bcPath"><span>php-lab</span><span class="bsep">›</span><span id="bcFile">p1.php</span><span class="bsep">›</span><span>php</span></div>
+        <div class="bcTools">
+          <button class="icBtn" id="btnCopy" title="Copy current file (Ctrl+C)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="5" y="5" width="8" height="8" rx="1"/><path d="M11 5V3.5A1.5 1.5 0 009.5 2H3.5A1.5 1.5 0 002 3.5v6A1.5 1.5 0 003.5 11H5"/></svg></button>
+          <button class="icBtn" id="btnCopyAll" title="Copy all programs (Ctrl+Shift+C)"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="2" width="9" height="9" rx="1"/><path d="M5 5h9v9H5z"/></svg></button>
+        </div>
+      </div>
+      <div class="editorWrap">
+        <div class="editor" id="editor"></div>
+        <div class="minimap" id="minimap"><div class="mmView"></div></div>
+      </div>
+      <div class="panel" id="panel">
+        <div class="panelHead">
+          <span class="ptab active">TERMINAL</span><span class="ptab">OUTPUT</span>
+          <span class="ptab">PROBLEMS</span><span class="ptab">DEBUG CONSOLE</span><span class="ptab">PORTS</span>
+          <span class="pTools"><span>⌄</span><span>🗑</span><span>✕</span></span>
+        </div>
+        <div class="term" id="term"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <div class="sbLeft">
+      <span class="sbItem">⌗</span>
+      <span class="sbItem"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.3"><circle cx="5" cy="4" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="11" cy="8" r="1.6"/><path d="M5 5.6v4.8"/></svg> main*</span>
+      <span class="sbItem">↻ 1↓ 0↑</span>
+      <span class="sbItem">⊗ 0</span>
+      <span class="sbItem">⚠ 0</span>
+    </div>
+    <div class="sbRight">
+      <span class="sbItem" id="sbPos">Ln 1, Col 1</span>
+      <span class="sbItem">Spaces: 4</span>
+      <span class="sbItem">UTF-8</span>
+      <span class="sbItem">CRLF</span>
+      <span class="sbItem">PHP</span>
+      <span class="sbItem"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.3"><path d="M8 2a4 4 0 00-4 4c0 3-1 4-1 4h10s-1-1-1-4a4 4 0 00-4-4zM6.5 13a1.5 1.5 0 003 0"/></svg></span>
+    </div>
+  </div>
+
+  <div class="toasts" id="toasts"></div>
+  <div class="palette" id="palette" hidden>
+    <input id="palInput" placeholder="Search files by name (append : to go to line)" autocomplete="off">
+    <div class="palList" id="palList"></div>
+    <div class="palHint">Enter to open · Esc to dismiss</div>
+  </div>
+</div>
+
+<script>
+const FILES=[
+{name:"p1.php",kind:"php",title:"Student marks",code:`<html>
+<body>
+<h2>Student Marks</h2>
+<?php
+$stdMarks = array(
+    "Ramesh" => array(
+        "Java" => 88,
+        "Php" => 98,
+        "Networking" => 78
+    ),
+    "Suresh" => array(
+        "Java" => 83,
+        "Php" => 90,
+        "Networking" => 82
+    ),
+    "Kishan" => array(
+        "Java" => 85,
+        "Php" => 90,
+        "Networking" => 79
+    )
+);
+foreach ($stdMarks as $std => $subjectArray) {
+    echo "Marks of $std:<br>";
+    foreach ($subjectArray as $subject => $marks) {
+        echo "$subject = $marks <br>";
+    }
+    echo "<br><br>";
+}
+?>
+</body>
+</html>`},
+{name:"p2.php",kind:"php",title:"Calculator",code:`<html>
+<?php
+if (isset($_POST["operator"])) {
+    $first_num  = $_POST["first_num"];
+    $second_num = $_POST["second_num"];
+    $operator   = $_POST["operator"];
+    $result     = "";
+
+    if (is_numeric($first_num) && is_numeric($second_num)) {
+        switch ($operator) {
+            case "+":
+                $result = $first_num + $second_num;
+                break;
+
+            case "-":
+                $result = $first_num - $second_num;
+                break;
+
+            case "*":
+                $result = $first_num * $second_num;
+                break;
+
+            case "/":
+                $result = $first_num / $second_num;
+                break;
+        }
+    }
+}
+?>
+
+<body>
+<h1>PHP Simple Calculator</h1>
+
+<form action="" method="post">
+
+    <p>
+        <b>First Number:</b>
+        <input type="number" name="first_num"
+               value="<?php echo $first_num; ?>" required>
+    </p>
+
+    <p>
+        <b>Second Number:</b>
+        <input type="number" name="second_num"
+               value="<?php echo $second_num; ?>" required>
+    </p>
+
+    <p>
+        <b>Result:</b>
+        <input type="number" name="result"
+               value="<?php echo $result; ?>" readonly>
+    </p>
+
+    <input type="submit" value="+" name="operator">
+    <input type="submit" value="-" name="operator">
+    <input type="submit" value="*" name="operator">
+    <input type="submit" value="/" name="operator">
+
+</form>
+
+</body>
+</html>`},
+{name:"p3.php",kind:"php",title:"Pyramid",code:`<html>
+<body>
+<?php
+$noOfLines = "";
+$symbol = "";
+if (isset($_POST["submit"])) {
+$noOfLines = $_POST["line"];
+$symbol = $_POST["symbol"];
+}
+?>
+<h2>Pyramid</h2>
+<form method="post">
+Enter the loop number:
+<input type="number" name="line" required value="<?php echo $noOfLines; ?>"><br><br>
+Enter the Symbol:
+<input type="text" name="symbol" required value="<?php echo $symbol; ?>"><br><br>
+<input type="submit" value="Submit" name="submit">
+<input type="submit" value="Clear" name="clr"><br><br>
+</form>
+<?php
+if ($noOfLines and $symbol) {
+for ($i = 0; $i < $noOfLines; $i++) {
+for ($j = 0; $j < $i + 1; $j++) {
+echo "<b>$symbol</b>";
+}
+echo "<br>";
+}
+}
+?>
+</body>
+</html>`},
+{name:"p4.php",kind:"php",title:"Armstrong",code:`<html>
+<body>
+ <form method="POST">
+ <table border="1">
+ <tr>
+ <td>Enter Number:</td>
+ <td><input type="number" name="number"></td>
+ </tr>
+ <tr>
+ <td></td>
+ <td>
+ <input type="submit" value="Submit" name="Submit">
+ </td>
+ </tr>
+ <?php
+ if (isset($_POST['number']))
+ {
+ $a = $_POST['number'];
+ $number = $a;
+ $sum = 0;
+ while ($number != 0)
+ {
+ $r = $number % 10;
+ $sum = $sum + ($r * $r * $r );
+ $number = (int)($number / 10);
+ }
+ if ($a == $sum)
+ {
+ echo "$a is an Amstrong Number";
+ }
+ else
+{
+ echo "$a is not an Amstrong Number";
+ }
+ }
+ ?>
+ </table>
+ </form>
+</body>
+</html>`},
+{name:"p5.php",kind:"php",title:"Date",code:`<?php
+date_default_timezone_set('Asia/Kolkata');
+
+$time=date('G:i');
+echo"current time is: $time<br>";
+
+$a=date('G');
+
+if($a>=0&& $a<=5)
+    echo "It's Late Night";
+else if($a>=6 && $a<=11)
+    echo "Good Morning";
+else if($a>=12 && $a<=16)
+    echo "Good Afternoon";
+else if($a>=17 && $a<=23)
+    echo "Good Evening";
+echo"<br>";
+
+$date = date('d-m-Y');
+echo "Today's Date is $date<br>";
+
+$b=date('l');
+echo"Today is $b<br>";
+?>`},
+{name:"index.html",kind:"html",title:"Index",code:`<!DOCTYPE html>
+<html>
+<head>
+    <title>PHP Lab</title>
+</head>
+<body>
+    <h1>PHP Lab Exercises</h1>
+    <ul>
+        <li><a href="p1.php">Program 1</a></li>
+        <li><a href="p2.php">Program 2</a></li>
+    </ul>
+</body>
+</html>`},
+{name:"style.css",kind:"css",title:"Style",code:`body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+input {
+    padding: 4px;
+}`},
+{name:"notes.txt",kind:"txt",title:"Notes",code:`Lab file list
+-------------
+p1  nested array + foreach
+p2  calculator with POST
+p3  pyramid loop
+p4  armstrong number
+p5  date function`}
+];
+
+const editor=document.getElementById('editor'),tabsEl=document.getElementById('tabs'),
+      filesEl=document.getElementById('files'),minimap=document.getElementById('minimap'),
+      tbTitle=document.getElementById('tbTitle'),bcFile=document.getElementById('bcFile'),
+      toasts=document.getElementById('toasts'),term=document.getElementById('term'),
+      panel=document.getElementById('panel'),sidebar=document.getElementById('sidebar'),
+      palette=document.getElementById('palette'),palInput=document.getElementById('palInput'),
+      palList=document.getElementById('palList'),sbPos=document.getElementById('sbPos'),
+      btnCopy=document.getElementById('btnCopy');
+
+let openTabs=['p1.php'],active='p1.php',actLine=1;
+
+function toast(msg){
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  toasts.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),320)},1800);
+}
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const TOK=/(\/\/[^\n]*|#[^\n]*)|('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")|(<\?php|<\?=|\?>)|(\$[A-Za-z_]\w*)|\b(if|else|elseif|foreach|for|while|switch|case|break|return|function|echo|array|isset|and|or|new|class)\b|\b(\d+(?:\.\d+)?)\b|(<\/?[a-zA-Z][\w-]*)/g;
+
+function hl(line){
+  let out='',last=0,m;TOK.lastIndex=0;
+  while((m=TOK.exec(line))!==null){
+    out+=esc(line.slice(last,m.index));
+    const c=m[1]?'tk-com':m[2]?'tk-str':m[3]?'tk-php':m[4]?'tk-var':m[5]?'tk-kw':m[6]?'tk-num':'tk-tag';
+    out+='<span class="'+c+'">'+esc(m[0])+'</span>';
+    last=m.index+m[0].length;
+  }
+  return out+esc(line.slice(last));
+}
+function mmColor(l){
+  const t=l.trim();if(!t)return null;
+  if(t.startsWith('//')||t.startsWith('#'))return '#6a9955';
+  if(t.includes('<?php')||t.includes('?>'))return '#c586c0';
+  if(t.startsWith('$'))return '#9cdcfe';
+  if(t.startsWith('echo'))return '#ce9178';
+  if(t.startsWith('<'))return '#569cd6';
+  return '#9d9d9d';
+}
+
+function renderFiles(){
+  filesEl.innerHTML='';
+  FILES.forEach(f=>{
+    const d=document.createElement('div');
+    d.className='file'+(f.name===active?' active':'');
+    const ext=f.name.split('.').pop();
+    d.innerHTML='<span class="fi '+ext+'">'+ext.toUpperCase()+'</span>'+f.name;
+    d.onclick=()=>openFile(f.name);
+    filesEl.appendChild(d);
+  });
+  const scm=document.getElementById('scmFiles');
+  scm.innerHTML='';
+  FILES.filter(f=>f.kind==='php').forEach(f=>{
+    const d=document.createElement('div');d.className='file';
+    d.innerHTML='<span class="fi php">PHP</span>'+f.name;
+    d.onclick=()=>openFile(f.name);scm.appendChild(d);
+  });
+}
+
+function renderTabs(){
+  tabsEl.innerHTML='';
+  openTabs.forEach(n=>{
+    const t=document.createElement('div');
+    t.className='tab'+(n===active?' active':'');
+    t.innerHTML='<span class="fi php">PHP</span>'+n+'<span class="x">✕</span>';
+    t.onclick=e=>{
+      if(e.target.classList.contains('x')){
+        openTabs=openTabs.filter(x=>x!==n);
+        if(active===n)active=openTabs[openTabs.length-1]||'p1.php';
+        if(!openTabs.length){openTabs=['p1.php'];active='p1.php'}
+        renderTabs();loadFile();return;
+      }
+      openFile(n);
+    };
+    tabsEl.appendChild(t);
+  });
+}
+
+function loadFile(){
+  const f=FILES.find(x=>x.name===active)||FILES[0];
+  tbTitle.textContent=f.name+' - php-lab - Visual Studio Code';
+  bcFile.textContent=f.name;
+  document.title=f.name+' - php-lab - Visual Studio Code';
+  const lines=f.code.split('\n');
+  editor.innerHTML='';
+  lines.forEach((ln,i)=>{
+    const row=document.createElement('div');
+    row.className='row'+(i+1===actLine?' act':'');
+    row.innerHTML='<div class="ln">'+(i+1)+'</div><div class="lc">'+(i+1===actLine?'<span class="caret"></span>':'')+hl(ln)+'</div>';
+    row.onclick=()=>{actLine=i+1;sbPos.textContent='Ln '+(i+1)+', Col 1';
+      editor.querySelectorAll('.row').forEach((r,k)=>r.classList.toggle('act',k===i+1));
+      loadFileKeepScroll();};
+    editor.appendChild(row);
+  });
+  minimap.innerHTML='<div class="mmView"></div>';
+  lines.slice(0,160).forEach(ln=>{
+    const c=mmColor(ln);if(!c)return;
+    const b=document.createElement('div');b.className='mm';
+    b.style.background=c;b.style.width=Math.min(100,Math.max(6,ln.length*1.4))+'%';
+    minimap.appendChild(b);
+  });
+  term.innerHTML='<div class="dim">PS C:\\xampp\\htdocs\\php-lab&gt; <span class="g">php '+f.name+'</span></div>'+
+    '<div class="dim">'+(f.kind==='php'?'[OK] executed without fatal errors':'static file — open in browser')+'</div>'+
+    '<div class="dim">PS C:\\xampp\\htdocs\\php-lab&gt; <span class="caret" style="height:13px"></span></div>';
+  renderFiles();renderTabs();
+}
+function loadFileKeepScroll(){const s=editor.scrollTop;loadFile();editor.scrollTop=s}
+function openFile(name){active=name;actLine=1;if(!openTabs.includes(name))openTabs.push(name);loadFile();editor.scrollTop=0}
+
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true}catch(e){
+    const ta=document.createElement('textarea');ta.value=t;ta.style.position='absolute';
+    ta.style.left='-9999px';document.body.appendChild(ta);ta.select();
+    let ok=false;try{ok=document.execCommand('copy')}catch(_){}
+    ta.remove();return ok;}
+}
+async function copyCurrent(){
+  const f=FILES.find(x=>x.name===active);if(!f)return;
+  const ok=await copyText(f.code);
+  toast(ok?'Copied '+f.name+' to clipboard':'Copy failed');
+  if(ok){btnCopy.classList.add('ok');setTimeout(()=>btnCopy.classList.remove('ok'),1000)}
+}
+async function copyAll(){
+  const all=FILES.filter(f=>f.kind==='php').map(f=>'// ===== '+f.name+' =====\n'+f.code).join('\n\n\n');
+  const ok=await copyText(all);toast(ok?'Copied all 5 programs':'Copy failed');
+}
+btnCopy.onclick=copyCurrent;
+document.getElementById('btnCopyAll').onclick=copyAll;
+
+const VIEWS={explorer:'viewExplorer',search:'viewSearch',scm:'viewSCM',debug:'viewDebug',ext:'viewExt'};
+function showView(v){
+  Object.entries(VIEWS).forEach(([k,id])=>document.getElementById(id).hidden=(k!==v));
+  document.querySelectorAll('.act').forEach(a=>a.classList.toggle('active',a.dataset.v===v));
+  sidebar.classList.remove('hidden');
+  if(v==='search')document.getElementById('sInput').focus();
+}
+document.querySelectorAll('.act[data-v]').forEach(a=>a.onclick=()=>{
+  if(a.classList.contains('active')&&!sidebar.classList.contains('hidden'))sidebar.classList.add('hidden');
+  else showView(a.dataset.v);
+});
+
+const sInput=document.getElementById('sInput'),sResults=document.getElementById('sResults');
+sInput.addEventListener('input',()=>{
+  const q=sInput.value.trim();
+  sResults.innerHTML='';
+  if(!q){sResults.innerHTML='<div class="sEmpty">Search across all files</div>';return}
+  let n=0;
+  FILES.forEach(f=>{
+    const hits=f.code.split('\n').map((l,i)=>[l,i+1]).filter(([l])=>l.toLowerCase().includes(q.toLowerCase()));
+    if(!hits.length)return;
+    const h=document.createElement('div');h.className='sFile';
+    h.innerHTML='<span class="fi php">PHP</span>'+f.name+' <span style="color:#8b8b8b;font-weight:400">'+hits.length+'</span>';
+    sResults.appendChild(h);
+    hits.slice(0,6).forEach(([l,i])=>{
+      const d=document.createElement('div');d.className='sHit';
+      const idx=l.toLowerCase().indexOf(q.toLowerCase());
+      d.innerHTML=esc(l.slice(Math.max(0,idx-14),idx))+'<b>'+esc(l.substr(idx,q.length))+'</b>'+esc(l.substr(idx+q.length,26));
+      d.onclick=()=>openFile(f.name);sResults.appendChild(d);
+    });
+    n+=hits.length;
+  });
+  if(!n)sResults.innerHTML='<div class="sEmpty">No results found.</div>';
+});
+
+const COMMANDS=[{n:'Copy current file'},{n:'Copy all programs'},{n:'Toggle terminal'},{n:'Toggle sidebar'},{n:'Go to file'}];
+function openPalette(pre){palette.hidden=false;palInput.value=pre||'';renderPal();palInput.focus()}
+function renderPal(){
+  palList.innerHTML='';
+  const q=palInput.value.replace(/^>/,'').trim().toLowerCase();
+  if(palInput.value.startsWith('>')){
+    COMMANDS.filter(c=>c.n.toLowerCase().includes(q)).forEach((c,i)=>{
+      const d=document.createElement('div');d.className='palItem'+(i===0?' sel':'');
+      d.textContent=c.n;d.onclick=()=>{runCommand(c.n);palette.hidden=true};
+      palList.appendChild(d);
+    });
+  } else {
+    FILES.filter(f=>f.name.toLowerCase().includes(q)).forEach((f,i)=>{
+      const d=document.createElement('div');d.className='palItem'+(i===0?' sel':'');
+      d.innerHTML='<span class="fi '+f.name.split('.').pop()+'">'+f.name.split('.').pop().toUpperCase()+'</span>'+f.name;
+      d.onclick=()=>{openFile(f.name);palette.hidden=true};
+      palList.appendChild(d);
+    });
+  }
+}
+function runCommand(n){
+  if(n==='Copy current file')copyCurrent();
+  if(n==='Copy all programs')copyAll();
+  if(n==='Toggle terminal')panel.classList.toggle('hidden');
+  if(n==='Toggle sidebar')sidebar.classList.toggle('hidden');
+  if(n==='Go to file')openPalette('');
+}
+palInput.addEventListener('input',renderPal);
+palInput.addEventListener('keydown',e=>{
+  const items=[...palList.children],cur=items.findIndex(i=>i.classList.contains('sel'));
+  if(e.key==='ArrowDown'){e.preventDefault();items[cur]?.classList.remove('sel');items[Math.min(items.length-1,cur+1)]?.classList.add('sel')}
+  if(e.key==='ArrowUp'){e.preventDefault();items[cur]?.classList.remove('sel');items[Math.max(0,cur-1)]?.classList.add('sel')}
+  if(e.key==='Enter'){e.preventDefault();items[cur]?.click()}
+  if(e.key==='Escape')palette.hidden=true;
+});
+document.addEventListener('click',e=>{
+  if(!palette.hidden&&!palette.contains(e.target))palette.hidden=true;
+});
+
+document.addEventListener('keydown',e=>{
+  const c=e.ctrlKey||e.metaKey,inPal=document.activeElement===palInput;
+  if(c&&e.shiftKey&&e.key.toLowerCase()==='p'){e.preventDefault();openPalette('>');return}
+  if(c&&e.key.toLowerCase()==='p'){e.preventDefault();openPalette('');return}
+  if(c&&e.shiftKey&&e.key.toLowerCase()==='c'){e.preventDefault();copyAll();return}
+  if(c&&e.key.toLowerCase()==='c'&&!window.getSelection().toString()){e.preventDefault();copyCurrent();return}
+  if(c&&e.key==='`'){e.preventDefault();panel.classList.toggle('hidden');return}
+  if(c&&e.key.toLowerCase()==='b'){e.preventDefault();sidebar.classList.toggle('hidden');return}
+  if(c&&e.shiftKey&&e.key.toLowerCase()==='e'){e.preventDefault();showView('explorer');return}
+  if(c&&e.shiftKey&&e.key.toLowerCase()==='f'){e.preventDefault();showView('search');return}
+  if(e.key==='Escape'){palette.hidden=true;return}
+  if(inPal||document.activeElement===sInput)return;
+  if(!c){
+    const n=parseInt(e.key,10);
+    if(n>=1&&n<=5){e.preventDefault();openFile('p'+n+'.php');copyCurrent()}
+  }
+});
+
+loadFile();
+</script>
+</body>
+</html>
