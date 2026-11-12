@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHP Lab Exam — Quick Revision</title>
+<style>
+:root{--bg:#f4f5f8;--panel:#fff;--ink:#202432;--muted:#737b8c;--line:#e5e8ef;--accent:#6948e8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{background:linear-gradient(125deg,#24213a,#5743a8);color:#fff;padding:30px 18px}
+.wrap{width:min(1000px,calc(100% - 28px));margin:auto}
+h1{font-size:clamp(1.7rem,5vw,2.35rem);margin:0 0 5px}header p{margin:0;color:#e4dfff}
+.tools{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+input[type=search]{flex:1;min-width:190px;padding:12px 14px;border:1px solid #ffffff55;border-radius:10px;font:inherit}
+.toolbtn,.copy{border:0;border-radius:10px;padding:11px 15px;font:600 14px system-ui;cursor:pointer}
+.toolbtn{background:#fff;color:#34266e}.copy{background:var(--accent);color:#fff;white-space:nowrap}
+main{padding:24px 0 46px}.program{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:19px;margin-bottom:17px;box-shadow:0 5px 18px #19233a08}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.eyebrow{font-size:.76rem;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+h2{font-size:1.22rem;margin:3px 0 10px}.tip{background:#f2efff;border-left:3px solid var(--accent);padding:9px 12px;border-radius:7px;margin:4px 0 13px;font-size:.92rem}
+pre{margin:0;background:#171923;color:#f1f2f7;padding:16px;border-radius:10px;overflow:auto;max-height:560px;font:13px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4}
+footer{text-align:center;color:var(--muted);padding:0 15px 28px;font-size:.88rem}
+.empty{display:none;text-align:center;color:var(--muted);padding:25px}
+@media(max-width:560px){.program{padding:14px}.card-head{align-items:flex-start}.copy{padding:9px 11px}pre{font-size:12px}.tools{display:grid;grid-template-columns:1fr 1fr}.tools input{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>PHP Lab Exam — Quick Revision</h1>
+<p>Five programs • code copy buttons • quick memory hints</p>
+<div class="tools">
+<input id="search" type="search" placeholder="Search: array, POST, loop, date..." aria-label="Search programs">
+<button class="toolbtn" id="expandAll">Show all code</button>
+<button class="toolbtn" id="copyAll">Copy all programs</button>
+</div>
+</div></header>
+<main class="wrap">
+
+    <article class="program" data-search="program 3 — student marks nested associative array + foreach remember: outer foreach = student; inner foreach = each subject and mark.">
+      <div class="card-head">
+        <div><div class="eyebrow">Nested associative array + foreach</div><h2>Program 3 — Student Marks</h2></div>
+        <button class="copy" type="button" data-copy="1">Copy code</button>
+      </div>
+      <div class="tip"><strong>Quick memory:</strong> Remember: outer foreach = student; inner foreach = each subject and mark.</div>
+      <pre><code id="code-1">&lt;html&gt;
+        &lt;body&gt;
+        &lt;h2&gt;Student Marks&lt;/h2&gt;
+        &lt;?php
+
+        $stdMarks = array(
+            &quot;Ramesh&quot; =&gt; array(
+                &quot;Java&quot; =&gt; 88,
+                &quot;Php&quot; =&gt; 98,
+                &quot;Networking&quot; =&gt; 78
+            ),
+            &quot;Suresh&quot; =&gt; array(
+                &quot;Java&quot; =&gt; 83,
+                &quot;Php&quot; =&gt; 90,
+                &quot;Networking&quot; =&gt; 82
+            ),
+            &quot;Kishan&quot; =&gt; array(
+                &quot;Java&quot; =&gt; 85,
+                &quot;Php&quot; =&gt; 90,
+                &quot;Networking&quot; =&gt; 79
+            )
+        );
+
+        foreach ($stdMarks as $std =&gt; $subjectArray) {
+            echo &quot;Marks of $std:&lt;br&gt;&quot;;
+            foreach ($subjectArray as $subject =&gt; $marks) {
+                echo &quot;$subject = $marks &lt;br&gt;&quot;;
+            }
+            echo &quot;&lt;br&gt;&lt;br&gt;&quot;;
+        }
+        ?&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;</code></pre>
+    </article>
+    <article class="program" data-search="program 4 — simple calculator post + is_numeric + switch remember: operator button submits the form; switch selects +, -, * or /.">
+      <div class="card-head">
+        <div><div class="eyebrow">POST + is_numeric + switch</div><h2>Program 4 — Simple Calculator</h2></div>
+        <button class="copy" type="button" data-copy="2">Copy code</button>
+      </div>
+      <div class="tip"><strong>Quick memory:</strong> Remember: operator button submits the form; switch selects +, -, * or /.</div>
+      <pre><code id="code-2">&lt;html&gt;
+&lt;?php
+if (isset($_POST[&quot;operator&quot;])) {
+    $first_num  = $_POST[&quot;first_num&quot;];
+    $second_num = $_POST[&quot;second_num&quot;];
+    $operator   = $_POST[&quot;operator&quot;];
+    $result     = &quot;&quot;;
+
+    if (is_numeric($first_num) &amp;&amp; is_numeric($second_num)) {
+        switch ($operator) {
+            case &quot;+&quot;:
+                $result = $first_num + $second_num;
+                break;
+
+            case &quot;-&quot;:
+                $result = $first_num - $second_num;
+                break;
+
+            case &quot;*&quot;:
+                $result = $first_num * $second_num;
+                break;
+
+            case &quot;/&quot;:
+                $result = $first_num / $second_num;
+                break;
+        }
+    }
+}
+?&gt;
+
+&lt;body&gt;
+&lt;h1&gt;PHP Simple Calculator&lt;/h1&gt;
+
+&lt;form action=&quot;&quot; method=&quot;post&quot;&gt;
+
+    &lt;p&gt;
+        &lt;b&gt;First Number:&lt;/b&gt;
+        &lt;input type=&quot;number&quot; name=&quot;first_num&quot;
+               value=&quot;&lt;?php echo $first_num; ?&gt;&quot; required&gt;
+    &lt;/p&gt;
+
+    &lt;p&gt;
+        &lt;b&gt;Second Number:&lt;/b&gt;
+        &lt;input type=&quot;number&quot; name=&quot;second_num&quot;
+               value=&quot;&lt;?php echo $second_num; ?&gt;&quot; required&gt;
+    &lt;/p&gt;
+
+    &lt;p&gt;
+        &lt;b&gt;Result:&lt;/b&gt;
+        &lt;input type=&quot;number&quot; name=&quot;result&quot;
+               value=&quot;&lt;?php echo $result; ?&gt;&quot; readonly&gt;
+    &lt;/p&gt;
+
+    &lt;input type=&quot;submit&quot; value=&quot;+&quot; name=&quot;operator&quot;&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;-&quot; name=&quot;operator&quot;&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;*&quot; name=&quot;operator&quot;&gt;
+    &lt;input type=&quot;submit&quot; value=&quot;/&quot; name=&quot;operator&quot;&gt;
+
+&lt;/form&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </article>
+    <article class="program" data-search="program 5 — post method &amp; pyramid pattern $_post + nested for loops remember: outer loop = rows; inner loop = symbols in each row.">
+      <div class="card-head">
+        <div><div class="eyebrow">$_POST + nested for loops</div><h2>Program 5 — POST Method &amp; Pyramid Pattern</h2></div>
+        <button class="copy" type="button" data-copy="3">Copy code</button>
+      </div>
+      <div class="tip"><strong>Quick memory:</strong> Remember: outer loop = rows; inner loop = symbols in each row.</div>
+      <pre><code id="code-3">&lt;html&gt;
+&lt;body&gt;
+&lt;?php
+$noOfLines = &quot;&quot;;
+$symbol = &quot;&quot;;
+if (isset($_POST[&quot;submit&quot;])) {
+    $noOfLines = $_POST[&quot;line&quot;];
+    $symbol = $_POST[&quot;symbol&quot;];
+}
+?&gt;
+&lt;h2&gt;Pyramid&lt;/h2&gt;
+&lt;form method=&quot;post&quot;&gt;
+Enter the loop number:
+&lt;input type=&quot;number&quot; name=&quot;line&quot; required value=&quot;&lt;?php echo $noOfLines; ?&gt;&quot;&gt;&lt;br&gt;&lt;br&gt;
+Enter the Symbol:
+&lt;input type=&quot;text&quot; name=&quot;symbol&quot; required value=&quot;&lt;?php echo $symbol; ?&gt;&quot;&gt;&lt;br&gt;&lt;br&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Submit&quot; name=&quot;submit&quot;&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Clear&quot; name=&quot;clr&quot;&gt;&lt;br&gt;&lt;br&gt;
+&lt;/form&gt;
+&lt;?php
+if ($noOfLines and $symbol) {
+    for ($i = 0; $i &lt; $noOfLines; $i++) {
+        for ($j = 0; $j &lt; $i + 1; $j++) {
+            echo &quot;&lt;b&gt;$symbol&lt;/b&gt;&quot;;
+        }
+        echo &quot;&lt;br&gt;&quot;;
+    }
+}
+?&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </article>
+    <article class="program" data-search="armstrong number post + while loop + remainder remember: % 10 gets last digit; divide by 10 removes last digit; add digit³.">
+      <div class="card-head">
+        <div><div class="eyebrow">POST + while loop + remainder</div><h2>Armstrong Number</h2></div>
+        <button class="copy" type="button" data-copy="4">Copy code</button>
+      </div>
+      <div class="tip"><strong>Quick memory:</strong> Remember: % 10 gets last digit; divide by 10 removes last digit; add digit³.</div>
+      <pre><code id="code-4">&lt;html&gt;
+&lt;body&gt;
+&lt;form method=&quot;POST&quot;&gt;
+&lt;table border=&quot;1&quot;&gt;
+&lt;tr&gt;
+    &lt;td&gt;Enter Number:&lt;/td&gt;
+    &lt;td&gt;&lt;input type=&quot;number&quot; name=&quot;number&quot;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;&lt;/td&gt;
+    &lt;td&gt;
+        &lt;input type=&quot;submit&quot; value=&quot;Submit&quot; name=&quot;Submit&quot;&gt;
+    &lt;/td&gt;
+&lt;/tr&gt;
+&lt;?php
+if (isset($_POST[&#x27;number&#x27;]))
+{
+    $a = $_POST[&#x27;number&#x27;];
+    $number = $a;
+    $sum = 0;
+
+    while ($number != 0)
+    {
+        $r = $number % 10;
+        $sum = $sum + ($r * $r * $r);
+        $number = (int)($number / 10);
+    }
+
+    if ($a == $sum)
+    {
+        echo &quot;$a is an Amstrong Number&quot;;
+    }
+    else
+    {
+        echo &quot;$a is not an Amstrong Number&quot;;
+    }
+}
+?&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </article>
+    <article class="program" data-search="date function date() + if / else if remember: g = 24-hour hour; d-m-y = date; l = weekday name.">
+      <div class="card-head">
+        <div><div class="eyebrow">date() + if / else if</div><h2>Date Function</h2></div>
+        <button class="copy" type="button" data-copy="5">Copy code</button>
+      </div>
+      <div class="tip"><strong>Quick memory:</strong> Remember: G = 24-hour hour; d-m-Y = date; l = weekday name.</div>
+      <pre><code id="code-5">&lt;?php
+date_default_timezone_set(&#x27;Asia/Kolkata&#x27;);
+
+$time = date(&#x27;G:i&#x27;);
+echo &quot;current time is: $time&lt;br&gt;&quot;;
+
+$a = date(&#x27;G&#x27;);
+
+if ($a &gt;= 0 &amp;&amp; $a &lt;= 5)
+    echo &quot;It&#x27;s Late Night&quot;;
+else if ($a &gt;= 6 &amp;&amp; $a &lt;= 11)
+    echo &quot;Good Morning&quot;;
+else if ($a &gt;= 12 &amp;&amp; $a &lt;= 16)
+    echo &quot;Good Afternoon&quot;;
+else if ($a &gt;= 17 &amp;&amp; $a &lt;= 23)
+    echo &quot;Good Evening&quot;;
+
+echo &quot;&lt;br&gt;&quot;;
+
+$date = date(&#x27;d-m-Y&#x27;);
+echo &quot;Today&#x27;s Date is $date&lt;br&gt;&quot;;
+
+$b = date(&#x27;l&#x27;);
+echo &quot;Today is $b&lt;br&gt;&quot;;
+?&gt;</code></pre>
+    </article>
+<div class="empty" id="empty">No matching programs found.</div>
+</main>
+<footer>Revision helper. Use it to practise and understand the programs before your lab exam.</footer>
+<script>
+document.querySelectorAll('.copy').forEach(btn=>{
+  btn.addEventListener('click', async ()=>{
+    const code=document.getElementById('code-'+btn.dataset.copy).textContent;
+    try { await navigator.clipboard.writeText(code); btn.textContent='Copied!'; }
+    catch(e) { btn.textContent='Select code to copy'; }
+    setTimeout(()=>btn.textContent='Copy code',1500);
+  });
+});
+document.getElementById('copyAll').addEventListener('click',async()=>{
+  const all=[...document.querySelectorAll('pre code')].map(x=>x.textContent).join('\n\n'+'='.repeat(55)+'\n\n');
+  try { await navigator.clipboard.writeText(all); alert('All five programs copied.'); }
+  catch(e) { alert('Copy is unavailable in this browser. Use each code block instead.'); }
+});
+document.getElementById('expandAll').addEventListener('click',()=>{
+  document.querySelectorAll('pre').forEach(p=>p.style.maxHeight=p.style.maxHeight==='none'?'560px':'none');
+});
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim(); let shown=0;
+  document.querySelectorAll('.program').forEach(card=>{
+    const match=(card.dataset.search+' '+card.innerText.toLowerCase()).includes(q);
+    card.style.display=match?'':'none'; if(match)shown++;
+  });
+  document.getElementById('empty').style.display=shown?'none':'block';
+});
+</script>
+</body></html>
